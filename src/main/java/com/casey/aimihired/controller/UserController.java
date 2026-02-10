@@ -46,7 +46,7 @@ public class UserController {
         return ResponseEntity.ok(userProfile);
     } 
 
-    @PostMapping("/login")
+    @PostMapping("/login") 
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginDTO loginDTO) {
         ApiResponse response = service.login(loginDTO);
 
