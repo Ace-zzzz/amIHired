@@ -21,6 +21,7 @@ public class GetJobDTO {
     private final String status;
     @JsonProperty(value = "job_url")
     private final String jobURL;
+    private final Integer salary;
 
     // FULL TIME FIELD
     private final String benefits;

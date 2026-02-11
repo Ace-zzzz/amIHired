@@ -49,6 +49,7 @@ public class JobTest {
         dto.setWorkModel("on-site");
         dto.setStatus("pending");
         dto.setJobURL("www.youtube.com");
+        dto.setSalary(9000);
         dto.setJobType("FULL TIME");
         dto.setBenefits("test benefits");
 
@@ -108,6 +109,7 @@ public class JobTest {
         entity.setWorkModel("testWorkModel");
         entity.setStatus("testStatus");
         entity.setJobURL("testJobURL");
+        entity.setSalary(9000);
         entity.setBenefits("testBenefits");
 
         /**
@@ -167,6 +169,7 @@ public class JobTest {
         dto.setStatus("test Status");
         dto.setWorkModel("test Work model");
         dto.setJobURL("test Job URL");
+        dto.setSalary(9000);
 
         // ACT
         IllegalArgumentException exception = assertThrows(
@@ -196,6 +199,7 @@ public class JobTest {
         dto.setStatus("test Status");
         dto.setWorkModel("test Work model");
         dto.setJobURL("test Job URL");
+        dto.setSalary(9000);
         dto.setJobType("FULL TIME");
         dto.setBenefits("test benefits");
 
@@ -240,6 +244,7 @@ public class JobTest {
         dto.setStatus("test Status");
         dto.setWorkModel("test Work model");
         dto.setJobURL("test Job URL");
+        dto.setSalary(9000);
 
         // ACT
         IllegalArgumentException exception = assertThrows(

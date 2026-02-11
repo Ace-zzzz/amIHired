@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,10 @@ public class JobDTO {
 
     @JsonProperty(value = "job_url", access = JsonProperty.Access.WRITE_ONLY)
     private String jobURL;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotNull(message = "Salary Required is required!")
+    private Integer salary;
 
     @JsonProperty(value = "job_type", access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Job type is required!")

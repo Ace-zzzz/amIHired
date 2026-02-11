@@ -21,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,6 +67,11 @@ public class Job {
     @JsonProperty(value = "job_url", access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "job_url")
     private String jobURL;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false) 
+    @NotNull(message = "Salary Required is required!")
+    private Integer salary;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

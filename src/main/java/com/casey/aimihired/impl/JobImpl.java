@@ -34,7 +34,7 @@ public class JobImpl implements JobService{
     public ApiResponse create(JobDTO dto, String username) {
         // FIND USER BY USERNAME
         User user = userRepo.findByUsername(username).orElseThrow(
-            () -> new IllegalArgumentException("User with username not found")
+            () -> new IllegalArgumentException("User with username " + username + " not found")
         );
 
         // CREATE JOB TYPE
@@ -131,7 +131,8 @@ public class JobImpl implements JobService{
             .company(job.getCompany())
             .workModel(job.getWorkModel())
             .status(job.getStatus())
-            .jobURL(job.getJobURL());
+            .jobURL(job.getJobURL())
+            .salary(job.getSalary());
 
         if (job instanceof Fulltime fulltime) {
             dtoBuilder.jobType("FULL TIME")
@@ -159,6 +160,7 @@ public class JobImpl implements JobService{
         job.setWorkModel(dto.getWorkModel());
         job.setStatus(dto.getStatus());
         job.setJobURL(dto.getJobURL());
+        job.setSalary(dto.getSalary());
     }
 
     /**
