@@ -32,7 +32,7 @@ public class GetJobDTO {
 
     // INTERNSHIP FIELD
     @JsonProperty(value = "hours_required")
-    private final Integer hourRequired;
+    private final Integer hoursRequired;
     @JsonProperty(value = "is_paid")
     private final Boolean isPaid;
 }

@@ -144,7 +144,7 @@ public class JobImpl implements JobService{
         }
         else if (job instanceof Internship internship) {
             dtoBuilder.jobType("INTERNSHIP")
-                      .hourRequired(internship.getHourRequired())
+                      .hoursRequired(internship.getHoursRequired())
                       .isPaid(internship.getIsPaid());
         }
         else
@@ -171,7 +171,7 @@ public class JobImpl implements JobService{
         return switch (dto.getJobType().toUpperCase()) {
             case "INTERNSHIP" -> {
                 Internship internship = new Internship();
-                internship.setHourRequired(dto.getHourRequired());
+                internship.setHoursRequired(dto.getHoursRequired());
                 internship.setIsPaid(dto.getIsPaid());
 
                 yield internship;
@@ -210,7 +210,7 @@ public class JobImpl implements JobService{
         
         if (job instanceof Internship internship) {
                 internship.setIsPaid(dto.getIsPaid());
-                internship.setHourRequired(dto.getHourRequired());
+                internship.setHoursRequired(dto.getHoursRequired());
         }
     }
 }

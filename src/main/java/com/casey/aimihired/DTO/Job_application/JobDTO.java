@@ -52,7 +52,7 @@ public class JobDTO {
      * INTERNSHIP TABLE 
      **/
     @JsonProperty(value = "hours_required", access = JsonProperty.Access.WRITE_ONLY)
-    private Integer hourRequired;
+    private Integer hoursRequired;
 
     @JsonProperty(value = "is_paid", access = JsonProperty.Access.WRITE_ONLY)
     private Boolean isPaid;
@@ -85,7 +85,7 @@ public class JobDTO {
         return switch (jobType.toUpperCase()) {
             case "FULL TIME"  -> benefits      != null && !benefits.isBlank();
             case "PART TIME"  -> shiftSchedule != null && !shiftSchedule.isBlank();
-            case "INTERNSHIP" -> hourRequired  != null && isPaid != null;
+            case "INTERNSHIP" -> hoursRequired  != null && isPaid != null;
             default -> true;
         };
     }
