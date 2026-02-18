@@ -39,7 +39,7 @@ public class JobDTO {
     private String jobURL;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull(message = "Salary Required is required!")
+    @NotNull(message = "Salary is required!")
     private Integer salary;
 
     @JsonProperty(value = "job_type", access = JsonProperty.Access.WRITE_ONLY)

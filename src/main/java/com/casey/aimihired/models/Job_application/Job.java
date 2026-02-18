@@ -70,7 +70,7 @@ public class Job {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false) 
-    @NotNull(message = "Salary Required is required!")
+    @NotNull(message = "Salary is required!")
     private Integer salary;
 
     @CreationTimestamp

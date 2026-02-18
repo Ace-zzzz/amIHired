@@ -231,6 +231,7 @@ public class JobTest {
         assertEquals(dto.getStatus(), job.getStatus());
         assertEquals(dto.getWorkModel(), job.getWorkModel());
         assertEquals(dto.getJobURL(), job.getJobURL());
+        assertEquals(dto.getSalary(), job.getSalary());
     }
 
     @Test
