@@ -21,6 +21,7 @@ public class GetJobDTO {
     private final String status;
     @JsonProperty(value = "job_url")
     private final String jobURL;
+    private final Integer salary;
 
     // FULL TIME FIELD
     private final String benefits;
@@ -31,7 +32,7 @@ public class GetJobDTO {
 
     // INTERNSHIP FIELD
     @JsonProperty(value = "hours_required")
-    private final Integer hourRequired;
+    private final Integer hoursRequired;
     @JsonProperty(value = "is_paid")
     private final Boolean isPaid;
 }

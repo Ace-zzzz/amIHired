@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,10 @@ public class JobDTO {
     @JsonProperty(value = "job_url", access = JsonProperty.Access.WRITE_ONLY)
     private String jobURL;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotNull(message = "Salary is required!")
+    private Integer salary;
+
     @JsonProperty(value = "job_type", access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Job type is required!")
     @Size(min = 2,  max = 20, message = "Job type should be between 2 and 20 characters")
@@ -47,7 +52,7 @@ public class JobDTO {
      * INTERNSHIP TABLE 
      **/
     @JsonProperty(value = "hours_required", access = JsonProperty.Access.WRITE_ONLY)
-    private Integer hourRequired;
+    private Integer hoursRequired;
 
     @JsonProperty(value = "is_paid", access = JsonProperty.Access.WRITE_ONLY)
     private Boolean isPaid;
@@ -80,7 +85,7 @@ public class JobDTO {
         return switch (jobType.toUpperCase()) {
             case "FULL TIME"  -> benefits      != null && !benefits.isBlank();
             case "PART TIME"  -> shiftSchedule != null && !shiftSchedule.isBlank();
-            case "INTERNSHIP" -> hourRequired  != null && isPaid != null;
+            case "INTERNSHIP" -> hoursRequired  != null && isPaid != null;
             default -> true;
         };
     }

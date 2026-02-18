@@ -18,7 +18,7 @@ public class Internship extends Job{
     @JsonProperty(value = "hours_required", access = JsonProperty.Access.WRITE_ONLY)
     @Column(length = 50, nullable = false) 
     @NotNull(message = "Hours Required is required!")
-    private Integer hourRequired;
+    private Integer hoursRequired;
 
     @JsonProperty(value = "is_paid", access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false) 

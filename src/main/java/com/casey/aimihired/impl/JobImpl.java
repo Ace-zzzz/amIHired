@@ -34,7 +34,7 @@ public class JobImpl implements JobService{
     public ApiResponse create(JobDTO dto, String username) {
         // FIND USER BY USERNAME
         User user = userRepo.findByUsername(username).orElseThrow(
-            () -> new IllegalArgumentException("User with username not found")
+            () -> new IllegalArgumentException("User with username " + username + " not found")
         );
 
         // CREATE JOB TYPE
@@ -131,7 +131,8 @@ public class JobImpl implements JobService{
             .company(job.getCompany())
             .workModel(job.getWorkModel())
             .status(job.getStatus())
-            .jobURL(job.getJobURL());
+            .jobURL(job.getJobURL())
+            .salary(job.getSalary());
 
         if (job instanceof Fulltime fulltime) {
             dtoBuilder.jobType("FULL TIME")
@@ -143,7 +144,7 @@ public class JobImpl implements JobService{
         }
         else if (job instanceof Internship internship) {
             dtoBuilder.jobType("INTERNSHIP")
-                      .hourRequired(internship.getHourRequired())
+                      .hoursRequired(internship.getHoursRequired())
                       .isPaid(internship.getIsPaid());
         }
         else
@@ -159,6 +160,7 @@ public class JobImpl implements JobService{
         job.setWorkModel(dto.getWorkModel());
         job.setStatus(dto.getStatus());
         job.setJobURL(dto.getJobURL());
+        job.setSalary(dto.getSalary());
     }
 
     /**
@@ -169,7 +171,7 @@ public class JobImpl implements JobService{
         return switch (dto.getJobType().toUpperCase()) {
             case "INTERNSHIP" -> {
                 Internship internship = new Internship();
-                internship.setHourRequired(dto.getHourRequired());
+                internship.setHoursRequired(dto.getHoursRequired());
                 internship.setIsPaid(dto.getIsPaid());
 
                 yield internship;
@@ -208,7 +210,7 @@ public class JobImpl implements JobService{
         
         if (job instanceof Internship internship) {
                 internship.setIsPaid(dto.getIsPaid());
-                internship.setHourRequired(dto.getHourRequired());
+                internship.setHoursRequired(dto.getHoursRequired());
         }
     }
 }

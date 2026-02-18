@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.casey.aimihired.DTO.user.ChangePasswordDTO;
+import com.casey.aimihired.DTO.user.GetUserDTO;
 import com.casey.aimihired.DTO.user.LoginDTO;
 import com.casey.aimihired.DTO.user.UpdateUserNameDTO;
 import com.casey.aimihired.DTO.user.UserDTO;
@@ -56,6 +57,15 @@ public class UserImpl implements UserService {
         return new ApiResponse("Account Successfully Created", true);
     }
 
+    // GET USER'S PROFILE
+    public GetUserDTO getUserProfile(String username) {
+        // FETCH THE USER OR THROW ERROR
+        User user = repo.findByUsername(username).orElseThrow(
+            () -> new IllegalArgumentException("User with username " + username + " not found")
+        );
+
+        return convertUserToDTO(user);
+    }
     // LOGIN USER
     @Override
     public ApiResponse login(LoginDTO loginDTO) {
@@ -111,5 +121,17 @@ public class UserImpl implements UserService {
         user.setUsername(newUsernameRequest.getUsername().trim());
         
         return new ApiResponse("Successfully updated Username", true);
+    }
+
+    /**
+     * CONVERT USER OBJECT 
+     * TO DTO 
+     **/
+    private GetUserDTO convertUserToDTO(User user) {
+        GetUserDTO dto = new GetUserDTO();
+        dto.setEmail(user.getEmail());
+        dto.setUsername(user.getUsername());
+
+        return dto;
     }
 }
