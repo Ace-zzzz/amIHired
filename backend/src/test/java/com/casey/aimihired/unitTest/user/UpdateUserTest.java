@@ -1,0 +1,247 @@
+package com.casey.aimihired.unitTest.user;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.casey.aimihired.DTO.user.ChangePasswordDTO;
+import com.casey.aimihired.DTO.user.UpdateUserNameDTO;
+import com.casey.aimihired.impl.UserImpl;
+import com.casey.aimihired.models.User;
+import com.casey.aimihired.repo.UserRepo;
+import com.casey.aimihired.util.ApiResponse;
+
+@ExtendWith(MockitoExtension.class)
+public class UpdateUserTest {
+    @Mock
+    private UserRepo repo;
+
+    @Mock
+    private PasswordEncoder encoder;
+
+    @InjectMocks
+    private UserImpl userService;
+
+    private static final String testUsername = "testUser";
+
+    @Test
+    void updateUserPassword_shouldThrowException_whenUserDidNotFound() {
+        ChangePasswordDTO changePasswordRequest = new ChangePasswordDTO();
+
+        // ACT
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.changePassword(testUsername, changePasswordRequest)
+        );
+
+        /**
+         * VERIFIES THAT THE PASSWORD 
+         * DID NOT ENCRYPTED IN THE FIRST PLACE
+         **/ 
+        verifyNoInteractions(encoder);
+
+        /**
+         * VERIFIES THAT THE NEW PASSWORD
+         * DID NOT SAVE ON DATABASE 
+         **/
+        verify(repo, times(1)).findByUsername(testUsername);
+        verifyNoMoreInteractions(repo);
+
+        // ASSERT
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    void updateUserPassword_shouldThrowException_whenGivenPasswordAndActualPasswordDidNotMatch() {
+        // ARRANGE
+
+        User user = new User();
+        user.setUsername(testUsername);
+        user.setPassword("actualPassword");
+
+        ChangePasswordDTO changePasswordRequest = new ChangePasswordDTO();
+        changePasswordRequest.setCurrentPassword("currentPassword");
+
+        /**
+         * MOCK REPOSITORY CALL 
+         * TO SIMULATE THE FINDING OF USER BY ID
+         **/
+        when(repo.findByUsername(testUsername)).thenReturn(Optional.of(user));
+
+        // ACT
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.changePassword(user.getUsername(), changePasswordRequest)  
+        );
+
+        /**
+         * VERIFIES THAT THE NEW PASSWORD
+         * DID NOT SAVE ON DATABASE 
+         **/
+        verify(repo, times(1)).findByUsername(user.getUsername());
+        verifyNoMoreInteractions(repo);
+
+        
+        /**
+         * VERIFIES THAT THE NEW PASSWORD
+         * DID NOT REACH INTO ENCRYPTION
+         **/
+        verify(encoder, times(1)).matches(changePasswordRequest.getCurrentPassword(), user.getPassword());   
+        verifyNoMoreInteractions(encoder);
+
+        // ASSERT
+        assertEquals("Current Password is wrong", exception.getMessage());
+    }
+
+    @Test
+    void updateUserPassword_shouldThrowException_whenNewPasswordDidNotMatch() {
+        // ARRANGE
+        User user = new User();
+        user.setUsername(testUsername);
+        user.setPassword("actualPassword");
+
+        ChangePasswordDTO changePasswordRequest = new ChangePasswordDTO();
+        changePasswordRequest.setCurrentPassword("actualPassword");
+        changePasswordRequest.setNewPassword("newPassword");
+        changePasswordRequest.setConfirmPassword("newPassword123");
+
+        /**
+         * MOCK REPOSITORY CALL 
+         * TO SIMULATE THE FINDING OF USER BY ID
+         **/
+        when(repo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        /**
+         * MOCK ENCODER CALL 
+         * TO SIMULATE MATCHING OF THE PASSWORD
+         **/
+        when(encoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())).thenReturn(true);
+
+        // ACT
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.changePassword(user.getUsername(), changePasswordRequest)  
+        );
+
+        /**
+         * VERIFIES THAT THE NEW PASSWORD
+         * DID NOT SAVE ON DATABASE 
+         **/
+        verify(repo, times(1)).findByUsername(user.getUsername());
+        verifyNoMoreInteractions(repo);
+
+        
+        /**
+         * VERIFIES THAT THE NEW PASSWORD
+         * DID NOT REACH INTO ENCRYPTION
+         **/
+        verify(encoder, times(1)).matches(changePasswordRequest.getCurrentPassword(), user.getPassword());   
+        verifyNoMoreInteractions(encoder);
+
+        // ASSERT
+        assertEquals("Passwords do not match!", exception.getMessage());
+    }
+
+    @Test
+    void changePassword_hashedAndSaveToDB_whenNoExceptionError() {
+       // ARRANGE
+       User user = new User();
+       user.setUsername(testUsername);
+       user.setPassword("actualPassword");
+       
+       ChangePasswordDTO changePasswordRequest = new ChangePasswordDTO();
+       changePasswordRequest.setCurrentPassword("actualPassword");
+       changePasswordRequest.setNewPassword("newPassword");
+       changePasswordRequest.setConfirmPassword("newPassword");
+
+        /**
+         * MOCK REPOSITORY CALL 
+         * TO SIMULATE THE FINDING OF USER BY ID
+         **/
+        when(repo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        /**
+         * MOCK ENCODER CALL 
+         * TO SIMULATE THE ENCRYPTION OF PASSWORD
+         **/
+        when(encoder.encode(changePasswordRequest.getNewPassword())).thenReturn("new_hashed_password");
+        
+        /**
+         * MOCK ENCODER CALL 
+         * TO SIMULATE MATCHING OF THE PASSWORD
+         **/
+        when(encoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())).thenReturn(true);
+
+
+       // ACT
+       ApiResponse response = userService.changePassword(user.getUsername(), changePasswordRequest);
+
+       // VERIFIES THAT findById() IS CALLED ONE TIME
+       verify(repo, times(1)).findByUsername(user.getUsername());
+
+       // VERIFIES THAT encode() IS CALLED ONE TIME
+       verify(encoder, times(1)).encode(changePasswordRequest.getNewPassword());
+
+       // ASSERT
+       assertEquals("new_hashed_password", user.getPassword());
+       assertEquals("Successfully Changed Password", response.message());
+    }
+
+    @Test
+    void updateUsername_shouldThrowException_whenUserDidNotFound() {
+
+        UpdateUserNameDTO newUsernameRequest = new UpdateUserNameDTO();
+        
+        // ACT
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class, 
+            () -> userService.updateUserName(testUsername, newUsernameRequest)
+        );
+
+        // ASSERT
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    void updateUsername_shouldSaveAndUpdateUsername_whenNoExceptionError() {
+        // ARRANGE
+        User user = new User();
+        user.setUsername(testUsername);
+
+        UpdateUserNameDTO newUsernameRequest = new UpdateUserNameDTO();
+        newUsernameRequest.setUsername("updatedUsername");
+
+        /**
+         * MOCK THE REPOSITORY CALL
+         * TO SIMULATE THE FINDING OF USER 
+         * USING ID 
+         **/
+        when(repo.findByUsername(testUsername)).thenReturn(Optional.of(user));
+        
+        // ACT
+        ApiResponse response = userService.updateUserName(testUsername, newUsernameRequest);
+
+       /**
+        * VERIFIES THAT findById() IS CALLED 
+        * ONLY ONE TIME
+        **/
+        verify(repo, times(1)).findByUsername(testUsername);
+
+        // ASSERT
+        assertEquals(newUsernameRequest.getUsername(), user.getUsername());
+        assertEquals("Successfully updated Username", response.message());
+    }
+}
