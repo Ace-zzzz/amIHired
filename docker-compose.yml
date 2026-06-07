@@ -1,0 +1,62 @@
+services:
+
+  # ── Service 1: MySQL Database ──────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: amihired-db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_DATABASE:      ${DB_NAME:-amIHired}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-admin123}
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    ports:
+      - "3306:3306"
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-padmin123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Service 2: Spring Boot Backend ────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: amihired-backend
+    restart: unless-stopped
+
+    environment:
+      SPRING_DATASOURCE_URL:      jdbc:mysql://db:3306/${DB_NAME:-amIHired}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-admin123}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-prod}
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Service 3: React Frontend ──────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: amihired-frontend
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
