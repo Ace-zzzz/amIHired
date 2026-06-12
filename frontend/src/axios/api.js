@@ -4,7 +4,7 @@ import snakecaseKeys from 'snakecase-keys';
 
 // CREATE REUSABLE AXIOS INSTANCE
 const api = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "/api",
     headers: {
         "Content-Type" : "application/json"
     }

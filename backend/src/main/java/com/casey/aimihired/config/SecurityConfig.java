@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import javax.naming.AuthenticationException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,9 @@ import com.casey.aimihired.security.AuthTokenFilter;
 @Configuration
 public class SecurityConfig {
     private final AuthTokenFilter jwtFilter;
+
+    @Value("${app.cors.allowed-origin}")
+    private String allowedOrigin;
 
     // DEPENDENCY INJECTION
     public SecurityConfig(AuthTokenFilter jwtFilter) {
@@ -61,7 +65,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); 
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigin)); 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         
